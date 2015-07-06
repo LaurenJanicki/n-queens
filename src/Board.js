@@ -87,13 +87,12 @@
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      var hasConflict = false;
       for (var i = 0; i < this.attributes.n; i++) {
         if (this.hasRowConflictAt(i)) {
-          hasConflict = true;
+          return true;
         }
       }
-      return hasConflict; // fixme
+      return false; // fixme
     },
 
 
@@ -103,11 +102,21 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      var numConflicts = 0;
+      for (var i = 0; i < this.attributes.n; i++) {
+        numConflicts += this.get(i)[colIndex];
+      }
+
+      return numConflicts > 1; // fixme
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
+      for (var i = 0; i < this.attributes.n; i++) {
+        if (this.hasColConflictAt(i)) {
+          return true;
+        }
+      }
       return false; // fixme
     },
 
@@ -117,12 +126,35 @@
     // --------------------------------------------------------------
     //
     // test if a specific major diagonal on this board contains a conflict
-    hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+    hasMajorDiagonalConflictAt: function(row, col) {
+      var n = this.attributes.n;
+      // Counter variable
+      var numPieces = 0;
+      // Move diagonally until row or column is off board
+      while (row < n && col < n) {
+        // Incriment counter if square has piece
+        numPieces += this.get(row)[col];
+        // Move one square down and right
+        row ++;
+        col ++;
+      }
+      return numPieces > 1; // fixme
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
+      // Loop through start points starting at top left, moving independently right and down
+        // Skip corners because they only have one square
+      for (var i = 0; i < this.attributes.n - 1; i++) {
+        // Move start point across top row
+        if (this.hasMajorDiagonalConflictAt(0, i)){
+          return true;
+        }
+        // Move start point down left column
+        if (this.hasMajorDiagonalConflictAt(i, 0)){
+          return true;
+        }
+      }
       return false; // fixme
     },
 
