@@ -146,11 +146,11 @@
       // Loop through start points starting at top left, moving independently right and down
         // Skip corners because they only have one square
       for (var i = 0; i < this.attributes.n - 1; i++) {
-        // Move start point across top row
+        // Move start point rightward across top row
         if (this.hasMajorDiagonalConflictAt(0, i)){
           return true;
         }
-        // Move start point down left column
+        // Move start point down the left column
         if (this.hasMajorDiagonalConflictAt(i, 0)){
           return true;
         }
@@ -164,12 +164,35 @@
     // --------------------------------------------------------------
     //
     // test if a specific minor diagonal on this board contains a conflict
-    hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+    hasMinorDiagonalConflictAt: function(row, col) {
+      var n = this.attributes.n;
+      // Counter variable
+      var numPieces = 0;
+      // Move diagonally until row or column is off board
+      while (row < n && col >= 0) {
+        // Incriment counter if square has piece
+        numPieces += this.get(row)[col];
+        // Move one square down and left
+        row ++;
+        col --;
+      }
+      return numPieces > 1; // fixme
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
+      var n = this.attributes.n;
+      // Loop through start points starting at top right, moving independently left and down
+      for (var r = 0, c = n - 1; r < n; r++, c--) {
+        // Move start point left across top row
+        if (this.hasMinorDiagonalConflictAt(0, c)) {
+          return true;
+        }
+        // Move start point down the right column
+        if (this.hasMinorDiagonalConflictAt(r, n - 1)) {
+          return true;
+        }
+      }
       return false; // fixme
     }
 
