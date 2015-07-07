@@ -47,8 +47,8 @@ window.countNRooksSolutions = function(n) {
   var solutionCount = 0; //fixme
   var addPiece = function(board, row, col) {
     board.togglePiece(row, col);
-    if (! board.hasAnyRooksConflicts()) {
-      if (row === n - 1) {
+    if (!board.hasAnyRooksConflicts()) {
+      if (row === n - 1 && board !== undefined) {
         solutionCount++;
       } else {
         addPiece(board, row + 1, 0);
@@ -60,7 +60,11 @@ window.countNRooksSolutions = function(n) {
       addPiece(board, row, col);
     }
   };
-  addPiece(new Board({n:n}), 0, 0);
+  if (n === 0) {
+    solutionCount++;
+  } else {
+    addPiece(new Board({n: n}), 0, 0);
+  }
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
@@ -99,6 +103,7 @@ window.findNQueensSolution = function(n) {
   }
   solution = results;
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+
   return solution;
 };
 
@@ -117,7 +122,11 @@ window.countNQueensSolutions = function(n) {
     }
     board.togglePiece(row, col);
     col ++;
-    if (col < n) {
+    if (n % 2 === 0 && row === 0) {
+      if (col < Math.floor(n / 2)) {
+        addPiece(board, row, col);
+      }
+    } else if (col < n) {
       addPiece(board, row, col);
     }
   };
@@ -126,6 +135,9 @@ window.countNQueensSolutions = function(n) {
   } else {
     addPiece(new Board({n: n}), 0, 0);
   }
+  var evenAdjustment = (n > 0 && n % 2) === 0 ? 2 : 1;
+  solutionCount *= evenAdjustment;
+  // debugger;
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
 };
