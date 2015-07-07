@@ -9,6 +9,18 @@ Board.prototype.hasVerticalConflict = function (rowToCheck) {
   return false;
 };
 
+Board.prototype.hasDiagonalConflict = function(rowToCheck) {
+  for (var i = 0; i < rowToCheck; i++) {
+    if (this[i] === this[rowToCheck] / Math.pow(2, rowToCheck - i)) return true;
+    if (this[i] === this[rowToCheck] / Math.pow(2, i - rowToCheck)) return true;
+  }
+  return false;
+};
+
+Board.prototype.hasQueenConflict = function(rowToCheck) {
+  return this.hasVerticalConflict(rowToCheck) || this.hasDiagonalConflict(rowToCheck);
+}
+
 Board.prototype.togglePiece = function (row, col) {
   this[row] = this[row] ? 0 : Math.pow(2, col);
 };
@@ -45,7 +57,9 @@ window.findNRooksSolution = function(n) {
     }
   };
   solution = addPiece(new Board(), 0, 0);
-  return solution.toMatrix(n);
+  solution = solution.toMatrix(n);
+  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  return solution;
 };
 
 window.countNRooksSolutions = function(n) {
@@ -71,5 +85,68 @@ window.countNRooksSolutions = function(n) {
     addPiece(new Board(), 0, 0);
   }
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  return solutionCount;
+};
+
+window.findNQueensSolution = function(n) {
+  if (n === 0) {
+    return [];
+  }
+  var solution = undefined; //fixme
+  var addPiece = function(board, row, col) {
+    board.togglePiece(row, n - col - 1);
+    var solutionBoard = undefined;
+    if (! board.hasQueenConflict(row)) {
+      if (row === n - 1) {
+        solutionBoard = board;
+      } else {
+        solutionBoard = addPiece(board, row + 1, 0);
+      }
+    }
+    if (solutionBoard !== undefined) {
+      return solutionBoard;
+    }
+    board.togglePiece(row, n - col - 1);
+    col ++;
+    if (col < n) {
+      return addPiece(board, row, col);
+    }
+  }
+  var solution = addPiece(new Board(), 0, 0) || new Board();
+  solution = solution.toMatrix(n);
+  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+
+  return solution;
+};
+
+window.countNQueensSolutions = function(n) {
+  var solutionCount = 0; //fixme
+  var addPiece = function(board, row, col) {
+    board.togglePiece(row, n - col - 1);
+    if (!board.hasQueenConflict(row)) {
+      if (row === n - 1 && board !== undefined) {
+        solutionCount++;
+      } else {
+        addPiece(board, row + 1, 0);
+      }
+    }
+    board.togglePiece(row, n - col - 1);
+    col ++;
+    if (n % 2 === 0 && row === 0) {
+      if (col < Math.floor(n / 2)) {
+        addPiece(board, row, col);
+      }
+    } else if (col < n) {
+      addPiece(board, row, col);
+    }
+  };
+  if (n === 0) {
+    solutionCount++;
+  } else {
+    addPiece(new Board(), 0, 0);
+  }
+  var evenAdjustment = (n > 0 && n % 2) === 0 ? 2 : 1;
+  solutionCount *= evenAdjustment;
+  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
 };
