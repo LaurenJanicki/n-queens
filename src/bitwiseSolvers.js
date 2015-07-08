@@ -11,8 +11,8 @@ Board.prototype.hasVerticalConflict = function (rowToCheck) {
 
 Board.prototype.hasDiagonalConflict = function(rowToCheck) {
   for (var i = 0; i < rowToCheck; i++) {
-    if (this[i] === this[rowToCheck] / Math.pow(2, rowToCheck - i)) return true;
-    if (this[i] === this[rowToCheck] / Math.pow(2, i - rowToCheck)) return true;
+    if (this[i] === this[rowToCheck] >> rowToCheck - i) return true;
+    if (this[i] === this[rowToCheck] << rowToCheck - i) return true;
   }
   return false;
 };
@@ -22,7 +22,7 @@ Board.prototype.hasQueenConflict = function(rowToCheck) {
 }
 
 Board.prototype.togglePiece = function (row, col) {
-  this[row] = this[row] ? 0 : Math.pow(2, col);
+  this[row] = this[row] ? 0 : 1 << col;
 };
 
 Board.prototype.toMatrix = function (n) {
